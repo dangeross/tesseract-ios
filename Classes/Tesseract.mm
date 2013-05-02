@@ -48,6 +48,11 @@ namespace tesseract {
     return self;
 }
 
+- (void)dealloc {
+    _tesseract->~TessBaseAPI();
+    _tesseract = nil;
+}
+
 - (BOOL)initEngine {
     int returnCode = _tesseract->Init([_dataPath UTF8String], [_language UTF8String]);
     return (returnCode == 0) ? YES : NO;
@@ -112,8 +117,24 @@ namespace tesseract {
 }
 
 - (NSString *)recognizedText {
-    char* utf8Text = _tesseract->GetUTF8Text();
-    return [NSString stringWithUTF8String:utf8Text];
+    char* utf8chars = _tesseract->GetUTF8Text();
+    NSString *utf8String = [NSString stringWithUTF8String:utf8chars];
+    delete [] utf8chars;
+    return utf8String;
+}
+
+- (NSString *)getHOCRText {
+    char* hocrChars = _tesseract->GetHOCRText();
+    NSString *hocrString = [NSString stringWithUTF8String:hocrChars];
+    delete [] hocrChars;
+    return hocrString;
+}
+
+- (NSString *)getBoxText {
+    char* boxChars = _tesseract->GetBoxText();
+    NSString *boxString = [NSString stringWithUTF8String:boxChars];
+    delete [] boxChars;
+    return boxString;
 }
 
 - (void)setImage:(UIImage *)image
@@ -147,6 +168,10 @@ namespace tesseract {
     CGColorSpaceRelease(colorSpace);
     
     _tesseract->SetImage((const unsigned char *) _pixels, width, height, sizeof(uint32_t), width * sizeof(uint32_t));
+}
+
+- (void)end {
+    _tesseract->End();
 }
 
 @end

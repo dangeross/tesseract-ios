@@ -23,5 +23,8 @@
 - (BOOL)setLanguage:(NSString *)language;
 - (BOOL)recognize;
 - (NSString *)recognizedText;
+- (NSString *)getHOCRText;
+- (NSString *)getBoxText;
+- (void)end;
 
 @end
